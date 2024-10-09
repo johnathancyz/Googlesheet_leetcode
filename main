@@ -1,52 +1,5 @@
-function fetch_question_data(username, tag) {
+function fetch_question_data(data, tag) {
   
-
-  const data = {
-    operationName: "getUserProfile",
-    variables: {
-      username: username,
-    },
-    query: `
-      query getUserProfile($username: String!) {
-        allQuestionsCount {
-          difficulty
-          count
-        }
-        matchedUser(username: $username) {
-          username
-          githubUrl
-          twitterUrl
-          linkedinUrl
-          contributions {
-            points
-            questionCount
-            testcaseCount
-          }
-          submitStats {
-            totalSubmissionNum {
-              difficulty
-              count
-              submissions
-            }
-            acSubmissionNum {
-              difficulty
-              count
-              submissions
-            }
-          }
-          submissionCalendar
-        }
-        recentSubmissionList(username: $username, limit: 20) {
-          title
-          titleSlug
-          timestamp
-          statusDisplay
-          lang
-        }
-      }
-    `,
-  };
-
   try {
     const response = UrlFetchApp.fetch('https://leetcode.com/graphql', {
       method: 'post',
@@ -71,7 +24,7 @@ function fetch_question_data(username, tag) {
 }
 
 function fetchUsernamesFromSheet() {
-  const spreadsheetId = "1jjbhpsz7wf-nxxxxxxxxxxxxxxxxxxxxxxxx"; // Extracted from the URL
+  const spreadsheetId = "1jjbhpsz7wf-nWikH4GFovtObMl9lh54wPKF94MUt9_g"; // Extracted from the URL
   const spreadsheet = SpreadsheetApp.openById(spreadsheetId);
   const sheet = spreadsheet.getSheetByName("Sheet1"); // Get the sheet named "Sheet1"
   
@@ -127,7 +80,7 @@ function main() {
     return;
   }
 
-  const sheet = SpreadsheetApp.openById("1jjbhpsz7wf-nxxxxxxxxxxxxxxxxxxxxxxxx"').getActiveSheet();
+  const sheet = SpreadsheetApp.openById('1jjbhpsz7wf-nWikH4GFovtObMl9lh54wPKF94MUt9_g').getActiveSheet();
   const today = Utilities.formatDate(new Date(), "America/Los_Angeles", "MM/dd/yyyy");
   
   // Find the column index for each user ID
@@ -154,27 +107,69 @@ function main() {
   }
 
   const urlEntries = {}; // To collect URLs for each username
-
+  
   usernames.forEach(username => {
-    const testData = fetch_question_data(username, "recentSubmissionList");
+    const data = {
+      operationName: "getUserProfile",
+      variables: {
+        username: username,
+      },
+      query: `
+        query getUserProfile($username: String!) {
+          recentSubmissionList(username: $username, limit: 20) {
+            title
+            titleSlug
+            timestamp
+            statusDisplay
+            lang
+          }
+        }
+      `,
+    };
+    
+    
+
+    const testData = fetch_question_data(data, "recentSubmissionList");
+
 
     if (testData) {
       const latestSubmission = findLatestSubmissionTodayOrBeforeEndOfToday(testData);
       
       if (latestSubmission && latestSubmission.statusDisplay === "Accepted") {
         // Logger.log("latestSubmission.statusDisplay:" + latestSubmission.statusDisplay)
-        console.log(latestSubmission)
         const title = latestSubmission.title; // Extract the title
-        console.log(title);
         const titleSlug = title.replace(/ /g, '-'); // Replace spaces with hyphens for URL
-
+        const questionData = {
+          operationName: "getQuestionDetails",
+          variables: {
+            titleSlug: titleSlug,
+          },
+          query: `
+            query getQuestionDetails($titleSlug: String!) {
+              question(titleSlug: $titleSlug) {
+                questionId
+                questionFrontendId
+                title
+                titleSlug
+                isPaidOnly
+                difficulty
+                likes
+                dislikes
+                categoryTitle
+              }
+            }
+          `,
+        };
+        const questionresponse = fetch_question_data(questionData, "question");
+        const questionId = questionresponse.questionId
+        Logger.log("questionID: " + questionId)
         const problemUrl = `https://leetcode.com/problems/${titleSlug}/description/`; // Format the URL
         const submissionDate = new Date(latestSubmission.timestamp * 1000); // Convert timestamp to milliseconds
         const formattedSubmissionDate = Utilities.formatDate(submissionDate, "America/Los_Angeles", "yyyy-MM-dd'T'HH:mm:ss");
 
         // Collect the URL for this username
-        urlEntries[username] = problemUrl;
-        Logger.log("Data processed for " + username + " Status: " + latestSubmission.statusDisplay +" Time: " + formattedSubmissionDate + ": " + problemUrl);
+        urlEntries[username] = [questionId,titleSlug,problemUrl];
+        Logger.log("Data processed for " + username + "Status: " + latestSubmission.statusDisplay +" Time: " + formattedSubmissionDate + ": " + problemUrl);
       } else {
         Logger.log("No submission data found for " + username + " today or before the end of today.");
       }
@@ -187,10 +182,12 @@ function main() {
   if (Object.keys(urlEntries).length > 0) {
     if (todayRowIndex) {
       // Update the existing row for today
-      for (const [username, url] of Object.entries(urlEntries)) {
+      for (const [username, value] of Object.entries(urlEntries)) {
         const columnIndex = usernameToColumnIndex[username];
+        const cellData = `${value[0]}: ${value[1]}`;
         if (columnIndex) {
-          sheet.getRange(todayRowIndex, columnIndex).setValue(url); // Set the URL in the appropriate column
+          sheet.getRange(todayRowIndex, columnIndex)
+            .setFormula(`=HYPERLINK("${value[2]}", "${cellData}")`); // Set the URL in the appropriate column
         }
       }
       Logger.log("Today's row updated with new URLs.");
@@ -199,10 +196,12 @@ function main() {
       const newRow = Array(sheet.getLastColumn()).fill(''); // Create a new row with empty values
       newRow[0] = today; // Set the first column to today's date
 
-      for (const [username, url] of Object.entries(urlEntries)) {
+      for (const [username, value] of Object.entries(urlEntries)) {
         const columnIndex = usernameToColumnIndex[username];
+        const cellData = `${value[0]}: ${value[1]}`;
         if (columnIndex) {
-          newRow[columnIndex - 1] = url; // Set the problem URL in the corresponding column
+          newRow[columnIndex - 1] = cellData; // Set the problem URL in the corresponding column
+          newRow[columnIndex - 1].setFormula(`=HYPERLINK("${value[2]}")`);
         }
       }
 
