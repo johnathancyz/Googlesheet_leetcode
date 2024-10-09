@@ -200,8 +200,7 @@ function main() {
         const columnIndex = usernameToColumnIndex[username];
         const cellData = `${value[0]}: ${value[1]}`;
         if (columnIndex) {
-          newRow[columnIndex - 1] = cellData; // Set the problem URL in the corresponding column
-          newRow[columnIndex - 1].setFormula(`=HYPERLINK("${value[2]}")`);
+        newRow[columnIndex - 1] = `=HYPERLINK("${value[2]}", "${cellData}")`;
         }
       }
 
