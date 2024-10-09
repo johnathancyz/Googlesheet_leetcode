@@ -6,9 +6,9 @@
 
 ## Features
 
-- **Google Apps Script**: Built using Google Apps Script for seamless integration with Google Sheets.
-- **GraphQL Queries**: Utilizes GraphQL to fetch detailed user data from LeetCode.
-- **Automated Data Insertion**: Parses the retrieved data and automatically populates it into your Google Sheets.
+- **GraphQL API Integration**: Fetches user data and recent submission statistics directly from LeetCode.
+- **Automated Data Parsing**: Parses raw data to extract relevant information, such as problem titles, IDs, and submission status.
+- **Google Sheets Integration**: Automatically updates a specified Google Sheet with the latest user data.
 
 ## Getting Started
 
