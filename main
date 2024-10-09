@@ -24,7 +24,7 @@ function fetch_question_data(data, tag) {
 }
 
 function fetchUsernamesFromSheet() {
-  const spreadsheetId = "1jjbhpsz7wf-nWikH4GFovtObMl9lh54wPKF94MUt9_g"; // Extracted from the URL
+  const spreadsheetId = "1jjbhpsz7wf-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"; // Extracted from the URL
   const spreadsheet = SpreadsheetApp.openById(spreadsheetId);
   const sheet = spreadsheet.getSheetByName("Sheet1"); // Get the sheet named "Sheet1"
   
@@ -80,7 +80,7 @@ function main() {
     return;
   }
 
-  const sheet = SpreadsheetApp.openById('1jjbhpsz7wf-nWikH4GFovtObMl9lh54wPKF94MUt9_g').getActiveSheet();
+  const sheet = SpreadsheetApp.openById('1jjbhpsz7wf-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx').getActiveSheet();
   const today = Utilities.formatDate(new Date(), "America/Los_Angeles", "MM/dd/yyyy");
   
   // Find the column index for each user ID
