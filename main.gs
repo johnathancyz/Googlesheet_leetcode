@@ -24,7 +24,7 @@ function fetch_question_data(data, tag) {
 }
 
 function fetchUsernamesFromSheet() {
-  const spreadsheetId = "1jjbhpsz7wf-nWikH4GFovtObMl9lh54wPKF94MUt9_g"; // Extracted from the URL
+  const spreadsheetId = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"; // Extracted from the URL
   const spreadsheet = SpreadsheetApp.openById(spreadsheetId);
   const sheet = spreadsheet.getSheetByName("2025"); // Get the sheet named "Sheet1"
   
@@ -126,7 +126,7 @@ function checkIfEmpty() {
     return;
   }
 
-  const spreadsheetId = '1jjbhpsz7wf-nWikH4GFovtObMl9lh54wPKF94MUt9_g'; // Extracted from the URL
+  const spreadsheetId = 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'; // Extracted from the URL
   const spreadsheet = SpreadsheetApp.openById(spreadsheetId);
   const sheet = spreadsheet.getSheetByName("2025");
   const today = Utilities.formatDate(new Date(), "America/Los_Angeles", "MM/dd/yyyy");
@@ -192,7 +192,7 @@ function checkYesterday() {
     return;
   }
 
-  const spreadsheetId = '1jjbhpsz7wf-nWikH4GFovtObMl9lh54wPKF94MUt9_g';
+  const spreadsheetId = 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx';
   const spreadsheet = SpreadsheetApp.openById(spreadsheetId);
   const sheet2024 = spreadsheet.getSheetByName("2024");
   const sheet2025 = spreadsheet.getSheetByName("2025");
@@ -377,7 +377,7 @@ function main() {
     return;
   }
 
-  const spreadsheetId = '1jjbhpsz7wf-nWikH4GFovtObMl9lh54wPKF94MUt9_g'; // Extracted from the URL
+  const spreadsheetId = 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'; // Extracted from the URL
   const spreadsheet = SpreadsheetApp.openById(spreadsheetId);
   
   const sheet2024 = spreadsheet.getSheetByName("2024");
